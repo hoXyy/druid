@@ -861,10 +861,8 @@ impl<T: Data> AppState<T> {
         // GTK's synchronous clipboard read runs a nested event loop. Read the
         // clipboard before mutably borrowing `inner`, so callbacks dispatched
         // by that nested loop cannot re-enter this `RefCell` while borrowed.
-        let text = {
-            let inner = self.inner.borrow();
-            inner.app.clipboard().get_string()
-        };
+        let clipboard = self.inner.borrow().app.clipboard();
+        let text = clipboard.get_string();
         if let Some(text) = text {
             self.inner
                 .borrow_mut()
