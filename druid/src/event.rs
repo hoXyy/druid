@@ -5,7 +5,7 @@
 
 use std::ops::{Add, Sub};
 
-use druid_shell::{Clipboard, KeyEvent, TimerToken};
+use druid_shell::{KeyEvent, TimerToken};
 
 use crate::kurbo::{Rect, Size};
 use crate::mouse::MouseEvent;
@@ -108,8 +108,8 @@ pub enum Event {
     /// Because of repeat, there may be a number `KeyDown` events before
     /// a corresponding `KeyUp` is sent.
     KeyUp(KeyEvent),
-    /// Called when a paste command is received.
-    Paste(Clipboard),
+    /// Called when text is pasted from the clipboard.
+    Paste(String),
     /// Called when the trackpad is pinched.
     ///
     /// The value is a delta.

@@ -858,8 +858,18 @@ impl<T: Data> AppState<T> {
     }
 
     fn do_paste(&mut self, window_id: WindowId) {
-        let event = Event::Paste(self.inner.borrow().app.clipboard());
-        self.inner.borrow_mut().do_window_event(window_id, event);
+        // GTK's synchronous clipboard read runs a nested event loop. Read the
+        // clipboard before mutably borrowing `inner`, so callbacks dispatched
+        // by that nested loop cannot re-enter this `RefCell` while borrowed.
+        let text = {
+            let inner = self.inner.borrow();
+            inner.app.clipboard().get_string()
+        };
+        if let Some(text) = text {
+            self.inner
+                .borrow_mut()
+                .do_window_event(window_id, Event::Paste(text));
+        }
     }
 
     fn invalidate_ime(&mut self, cmd: Command, id: WindowId) {

@@ -613,17 +613,15 @@ impl<T: TextStorage + EditableText> Widget<T> for TextBox<T> {
                 }
                 ctx.set_handled();
             }
-            Event::Paste(ref item) if self.text().can_write() => {
-                if let Some(string) = item.get_string() {
-                    let text = if self.multiline {
-                        &string
-                    } else {
-                        string.lines().next().unwrap_or("")
-                    };
-                    if !text.is_empty() {
-                        let inval = self.text_mut().borrow_mut().insert_text(data, text);
-                        ctx.invalidate_text_input(inval);
-                    }
+            Event::Paste(string) if self.text().can_write() => {
+                let text = if self.multiline {
+                    string.as_str()
+                } else {
+                    string.lines().next().unwrap_or("")
+                };
+                if !text.is_empty() {
+                    let inval = self.text_mut().borrow_mut().insert_text(data, text);
+                    ctx.invalidate_text_input(inval);
                 }
             }
             _ => (),
